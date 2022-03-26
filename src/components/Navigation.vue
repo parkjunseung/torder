@@ -22,9 +22,9 @@
 			</div>
 			<div class="navName event">이벤트</div>
 		</div>	
-		<div class="wrap">
+		<div class="wrap" @click="openBag">
 			<div class="navIconWrap">
-				<img class="navIcon bag" src="@/assets/footerShoppingBag.png" />
+				<img class="navIcon bag" src="@/assets/footerShoppingBag.png"/>
 			</div>
 			<div class="navName bag">장바구니</div>
 		</div>		
@@ -32,12 +32,35 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+import { useStore } from "vuex";
+
 export default {
 	methods: {
 		Navigation(to) {
 			this.$router.push({name: to})
 		}
 	},
+	props: {
+		open: {
+      type: Boolean,
+      default: false,
+    },
+	},
+	setup(props, { emit }) {
+		const store = useStore();
+		const shoppingBagList = computed(() => store.state.main.shoppingBagList);
+		const openBag = () => {
+			//장바구니 체크
+			if (props.open === false && shoppingBagList.value.length !== 0) emit('open-bag', true);
+			else alert("장바구니 비어있음")
+    };
+
+		return {
+			openBag,
+			shoppingBagList
+		}
+	}
 }
 </script>
 
@@ -113,7 +136,7 @@ export default {
 	
 	.navigationBar .wrap .navName{
     margin-bottom: 3vw;
-    font-family: "SpoqaHanSansNeo";
+    font-family: "SpoqaHanSansNeo-Medium";
     font-size: 2.25vw;
 		font-weight: 500;
     letter-spacing: -.1375vw;

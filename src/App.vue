@@ -23,6 +23,8 @@ export default {
 
 <style>
 @import './assets/style/reset.css';
+@import './assets/style/fonts.scss';
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

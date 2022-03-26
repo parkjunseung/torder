@@ -2,11 +2,11 @@
   <div class="main">
 		<div class="menuContainer">
 			<div class="menu">
-				<div class="selected" v-for="( category, id ) in categories" :key=id >{{ category.name }}</div>
+				<div :class="(category.id !== selectedMainCategory) ? '' : 'selected'" v-for="( category, id ) in categories" :key=id >{{ category.name }}</div>
 			</div>
 			<div class="subMenu">
 				<div class="subMenuInner">
-					<div class="subMenuWrap" v-for="( subCategory, id ) in subCategories" :key=id>
+					<div :class="(subCategory.id !== selectedSubCategory) ? 'subMenuWrap' : 'subMenuWrap selected'" v-for="( subCategory, id ) in subCategories" :key=id>
 						<div class="name">{{ subCategory.name }}</div>
 						<div class="bar"></div>
 					</div>
@@ -22,20 +22,20 @@
 						</div>
 						<div class="bar"></div>
 						<div class="goodsListWrap">
-							<div class="goodsList" v-for="(goods, id) in goodsList.slice(0,10)" :key=id @click="clickGoods(goods)">
+							<div class="goodsList" v-for="(goods, id) in list" :key=id @click="clickGoods(goods);">
 								<div class="goodsImgWrap">
 									<img class="goodsImg" :src=goods.image>
-									<div class="soldOut">SOLD OUT</div>
+									<div v-if="goods.soldOut" class="soldOut">SOLD OUT</div>
 								</div>
 								<div class="goodsInfo">
-									<div class="goodsMarkWrap" v-if="goods.description !== null">
-										<div class="goodsMark">상세설명</div>
+									<div class="goodsMarkWrap" v-if="goods.optionGroups.length !==0 || goods.description !== ''">
+										<div class="goodsMark">{{(goods.optionGroups.length !==0 && goods.description !== '') ? '옵션/상세설명' : (goods.optionGroups.length !==0) ? '옵션' : '상세설명'}}</div>
 									</div>
 									<div class="goodsNameWrap">
 										<div class="goodsName">{{goods.name}}</div>
 									</div>
 									<div class="goodsPriceWrap">
-										<div class="goodsPrice">{{goods.price}}</div>
+										<div class="goodsPrice">{{comma(goods.price)}}</div>
 									</div>
 									<div class="goodsLableWrap">
 										<div class="goodsLable" v-if="goods.best !== false">BEST</div>
@@ -51,7 +51,7 @@
 		</div>
   </div>
 
-	<Navigation>
+	<Navigation :open="openShoppingBag" @open-bag="openShoppingBag=true">
 	</Navigation>
 	<ShoppingBag :open="openShoppingBag" :goods="selectedGoods"  @close-bag="openShoppingBag=value">
 	</ShoppingBag>
@@ -62,6 +62,8 @@ import { computed } from 'vue';
 import { useStore } from "vuex";
 import { ref, watch } from "vue";
 
+import {comma} from '@/util/util'
+
 import Navigation from '../components/Navigation';
 import ShoppingBag from '../components/ShoppingBag';
 
@@ -71,10 +73,12 @@ function fetch() {
 	const categories = computed(() => store.state.main.categories);
 	const subCategories = computed(() => store.state.main.subCategories);
 	const goodsList = computed(() => store.state.main.goods);
+	const list = computed(() => store.getters.getGoodsList);
 
 	return {
 		categories,
 		subCategories,
+		list,
 		goodsList
 	}
 }
@@ -86,7 +90,10 @@ export default {
 	},
 	setup () {
 		const store = useStore();
-
+		// 선택된 메인카테고리
+		const selectedMainCategory = ref('110701');
+		// 선택된 서브카테고리
+		const selectedSubCategory = ref('111706');
 		const selectedGoods = ref({});
 		const openShoppingBag = ref(false);
 		const shoppingBagList = computed(() => store.state.main.shoppingBagList);
@@ -94,7 +101,6 @@ export default {
 		watch(shoppingBagList, () => {
 			console.log(shoppingBagList.value)
     });
-
 		const clickGoods = (v) => {
 			store.commit('SET_SHOPPINGBAGLIST_DATA', v)
 			openShoppingBag.value = true
@@ -105,6 +111,9 @@ export default {
 			clickGoods,
 			selectedGoods,
 			shoppingBagList,
+			selectedMainCategory,
+			selectedSubCategory,
+			comma,
 			openShoppingBag
 		}
 	}
@@ -141,17 +150,22 @@ export default {
 		margin-top: 4vh;
 	}
 	.menu div {
-		font-family: "notoserif-semibold";
+		font-family: "NotoSerifKR-Black";
     font-size: 3.25vw;
     color: #2f2a26;
     padding: 1.125vw 3.125vw;
     border: 0.25vw solid #2f2a26;
     border-radius: 4.25vw;
 	}
+	.menu .selected {
+		background-color: #2f2a26;
+    font-weight: 900;
+    color: #fff;
+	}
 	.subMenu {
     position: relative;
     width: 100%;
-    padding: 1.5vw 0 2.375vw;
+    padding: 1.5vw 0 2.3vw;
     display: flex;
     align-items: center;
     box-sizing: border-box;
@@ -161,7 +175,7 @@ export default {
 		display: flex;
 	}
 	.subMenu .subMenuInner .subMenuWrap {
-    font-family: "notoserif";
+    font-family: "NotoSerifKR-Medium";
     font-size: 2.75vw;
     letter-spacing: -.075vw;
     box-sizing: border-box;
@@ -174,10 +188,15 @@ export default {
     white-space: nowrap;
     padding: 0.875vw 2.625vw 1vw;
     box-sizing: border-box;
+	}
+	.subMenu .subMenuInner .subMenuWrap.selected .name {
+    white-space: nowrap;
+    padding: 0.875vw 2.625vw 1vw;
+    box-sizing: border-box;
 		font-size: 3vw;
     border-radius: 12.5vw;
     background-color: #ab240f;
-    font-family: "notoserif-bold";
+    font-family: "NotoSerifKR-Bold";
     color: #fff;
 	}
 	.subMenu .subMenuInner .subMenuWrap .bar {
@@ -202,13 +221,13 @@ export default {
     gap: 1.25vw;
 	}
 	.goodsWrap .goodsTitle .goodsMain{
-		font-family: "notoserif-bold";
+		font-family: "NotoSerifKR-SemiBold";
     font-size: 2.25vw;
 		box-sizing: border-box;
     color: #7a7a7a;
 	}
 	.goodsWrap .goodsTitle .goodsSub{
-		font-family: "notoserif-bold";
+		font-family: "NotoSerifKR-Black";
     font-size: 3vw;
     color: #2f2a26;
     box-sizing: border-box;
@@ -258,7 +277,7 @@ export default {
     background-color: rgba(0,0,0,.8);
     border-bottom-left-radius: 1.25vw;
     border-bottom-right-radius: 1.25vw;
-    font-family: "notoserif-bold";
+    font-family: "NotoSerifKR-Bold";
     font-size: 2.25vw;
     color: #fff;
     display: flex;
@@ -286,7 +305,7 @@ export default {
     background-color: #2f2a26;
 	}
 	.goodsWrap .goodsListWrap .goodsList .goodsInfo .goodsNameWrap{
-    font-family: "notoserif-semibold";
+    font-family: "NotoSerifKR-SemiBold";
     font-size: 2.75vw;
     letter-spacing: -.06875vw;
     width: 35vw;
@@ -301,7 +320,7 @@ export default {
 	}
 	.goodsWrap .goodsListWrap .goodsList .goodsInfo .goodsPriceWrap{
 		margin-top: 0.25vw;
-    font-family: "notoserif-bold";
+    font-family: "NotoSerifKR-Bold";
     font-size: 3.125vw;
 	}
 	.goodsWrap .goodsListWrap .goodsList .goodsInfo .goodsPriceWrap .goodsPrice{}
@@ -314,7 +333,7 @@ export default {
 	.goodsWrap .goodsListWrap .goodsList .goodsInfo .goodsLableWrap .goodsLable{
 		width: 8.125vw;
     height: 3.25vw;
-    font-family: "notoserif-semibold";
+    font-family: "NotoSerifKR-SemiBold";
     font-size: 1.75vw;
     display: flex;
     justify-content: center;

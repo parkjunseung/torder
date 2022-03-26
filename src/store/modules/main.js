@@ -12,7 +12,7 @@ export const main = {
     },
     goods:[],
     shoppingBagList:[],
-    orderList:[]
+    orderList:[],
   },
   actions: {
     getMockData({commit}) {
@@ -31,6 +31,15 @@ export const main = {
 				totalPrice += state.shoppingBagList[i].price
 			}
       return totalPrice
+    },
+    getGoodsList(state){
+      let list = [];
+      for(let i = 0; i < state.goods.length; i++) {
+        if(state.goods[i].belongToCategories.includes('111706')) {
+          list.push(state.goods[i])
+        }
+			}
+      return list
     }
   },
   mutations: {

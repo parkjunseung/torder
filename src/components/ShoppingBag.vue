@@ -25,7 +25,7 @@
 							<div classe="goodsOption"></div>
 						</div>
 						<div class="goodsPriceWrap">
-							<div class="goodsPrice">{{goods.price}}</div>
+							<div class="goodsPrice">{{comma(goods.price)}}</div>
 							<div class="goodsMount">
 								<button class="plusButton">
 									<img src="@/assets/bagPlusButton.png">
@@ -41,7 +41,7 @@
 			</div>
 			<div class="bagTotalWrap">
 				<div class="totalMount">{{shoppingBagList.length +"개"}}</div>
-				<div class="totalPrice">{{totalPrice + "원"}}</div>
+				<div class="totalPrice">{{comma(totalPrice) + "원"}}</div>
 			</div>
 			<div class="bagButtonWrap">
 				<div class="closeButton" @click="closeBag">
@@ -56,8 +56,11 @@
 </template>
 
 <script>
-import { computed } from 'vue';
+import { reactive, computed } from 'vue';
 import { useStore } from "vuex";
+import dayjs from 'dayjs'
+
+import {comma} from '@/util/util'
 
 export default {
   props: {
@@ -68,11 +71,19 @@ export default {
 	},
   setup(props, { emit }) {
 		const store = useStore();
+		const order = reactive({})
 		const shoppingBagList = computed(() => store.state.main.shoppingBagList);
 		const totalPrice = computed(() => store.getters.price);
 
 		const clickOrder = () => {
-			store.commit('SET_ORDERLIST_DATA', shoppingBagList.value)
+			order.value = shoppingBagList.value
+			// order Number 추가
+			for (let i = 0; i < order.value.length; i++) {
+				order.value[i]['orderNo'] = i + 1
+				order.value[i]['time'] = dayjs().format("HH:mm:ss")
+			}
+			store.commit('SET_ORDERLIST_DATA', order.value)
+			emit('close-bag', false);
     };
 
 		const closeBag = () => {
@@ -80,6 +91,7 @@ export default {
     };
 
 		return {
+			comma,
 			shoppingBagList,
 			totalPrice,
 			clickOrder,
@@ -126,6 +138,7 @@ export default {
     height: 41.7px;
 	}
 	.bag .bellWrap .bellInner .bellName{
+		font-family: 'SpoqaHanSansNeo-Medium';
 		font-size: 23px;
 		color:white;
 	}
@@ -143,7 +156,7 @@ export default {
 	.bag .bagTitleWrap .bagTitle{
 		width: 16.25vw;
     height: 3.75vw;
-    font-family: Spoqa Han Sans Neo,"sans-serif";
+    font-family: "SpoqaHanSansNeo-Medium";
     font-size: 2.625vw;
     letter-spacing: -.13125vw;
     background-image: url(https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/front/Intersection-no-shadow.png);
@@ -173,7 +186,7 @@ export default {
     box-sizing: border-box;
 	}
 	.bag .bagWrap .bagHeaderWrap .bagHeaderName{
-		font-family: "notoserif-bold";
+		font-family: "NotoSerifKR-Bold";
     font-size: 3.25vw;
     letter-spacing: -.08125vw;
 	}
@@ -236,7 +249,7 @@ export default {
     box-sizing: border-box;
     width: 100%;
     max-height: 7.25vw;
-    font-family: "notoserif-bold";
+    font-family: "NotoSerifKR-Bold";
     font-size: 2.625vw;
     letter-spacing: -.06625vw;
     word-wrap: break-word;
@@ -246,9 +259,10 @@ export default {
     -webkit-box-orient: vertical;
     text-overflow: ellipsis;
     line-height: 1.33;
+		text-align:left
 	}
 	.bag .bagWrap .bagListWrap .bagList .bagListContainer .goodsNameWrap .goodsOption{
-		font-family: "Spoqa Han Sans";
+		font-family: "SpoqaHanSansNeo-Regular";
     font-size: 2.375vw;
     color: #0080ff;
     text-decoration: underline;
@@ -263,9 +277,10 @@ export default {
 	}
 	.bag .bagWrap .bagListWrap .bagList .bagListContainer .goodsPriceWrap .goodsPrice{
 		padding: 0 2.75vw;
-    font-family: "notoserif-bold";
+    font-family: "NotoSerifKR-Bold";
     font-size: 2.875vw;
     line-height: 1.1;
+		text-align:left
 	}
 	.bag .bagWrap .bagListWrap .bagList .bagListContainer .goodsPriceWrap .goodsMount{
 		display: flex;
@@ -286,7 +301,7 @@ export default {
     height: 46px;	
 	}
 	.bag .bagWrap .bagListWrap .bagList .bagListContainer .goodsPriceWrap .goodsMount .ea{
-		font-family: "notoserif-semibold";
+		font-family: "NotoSerifKR-Bold";
     font-size: 3.5vw;
     letter-spacing: -.175vw;
 	}
@@ -312,13 +327,13 @@ export default {
     align-items: center;
 	}
 	.bag .bagTotalWrap .totalMount{
-		font-family: "Spoqa Han Sans";
+		font-family: "SpoqaHanSansNeo-Bold";
     font-size: 3.25vw;
     font-weight: 700;
     letter-spacing: -.08125vw;
 	}
 	.bag .bagTotalWrap .totalPrice{
-		font-family: "notoserif-bold";
+		font-family: "NotoSerifKR-Bold";
     font-size: 3.75vw;
     color: #b51900;
     letter-spacing: -.09375vw;
@@ -337,7 +352,7 @@ export default {
 		width: 18.75vw;
     height: 11.5vw;
 		background-color: #999;
-		font-family: "Spoqa Han Sans";
+		font-family: "SpoqaHanSansNeo-Bold";
     font-size: 4.25vw;
     font-weight: 700;
     color: #fff;
@@ -353,7 +368,7 @@ export default {
 	.bag .bagButtonWrap .orderButton .orderButtonTitle{
 		width: 72.5vw;
     height: 11.5vw;
-		font-family: "Spoqa Han Sans";
+		font-family: "SpoqaHanSansNeo-Bold";
     font-size: 4.25vw;
     font-weight: 700;
     color: #fff;

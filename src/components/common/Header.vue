@@ -93,7 +93,7 @@ export default {
 	}
 
 	.headWrap .headmenu .headNo .headNoWrap{
-		font-family: "mapoflower";
+		font-family: "SpoqaHanSansNeo";
     display: flex;
     flex-direction: column;
 		width: 100%;
@@ -105,6 +105,7 @@ export default {
 		font-size: 1.75vw;
 	}
 	.headWrap .headmenu .headNo .headNoWrap .tableNo{
+		font-family: "SpoqaHanSansNeo-Bold";
 		font-size: 4vw;
     font-weight: 700;
     letter-spacing: -.2vw;

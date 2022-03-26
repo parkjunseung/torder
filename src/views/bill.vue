@@ -12,55 +12,80 @@
 		</div>
 		<div class="billGoodsList">
 			<div class="billInfo">
-				<div class="billInfoWrap">
+				<div class="billInfoWrap"  v-for="( order, index ) in orderList" :key=index>
 					<div class="billInfoContainer">
 						<div class="billInfoName">
-							<div class="billGoodsName"></div>	
+							<div class="billGoodsName">{{order.name}}</div>	
 							<div class="billGoodsPrice">
-								<div class="billGoodsMount"></div>
-								<div class="billGoodsTotalPrice"></div>
+								<div class="billGoodsMount">1개</div>
+								<div class="billGoodsTotalPrice">{{comma(order.price)}}</div>
 							</div>	
 						</div>
 						<div class="billInfoOption">
 							<div class="billOptionPrice">
-								<div class="optionText"></div>
-								<div class="optionPrice"></div>
+								<div class="optionText">기본</div>
+								<div class="optionPrice">{{comma(order.price)}}</div>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="billPrice">
 					<div class="billTotalPriceText">총주문금액</div>
-					<div class="billTotalPrice">0</div>
+					<div class="billTotalPrice">{{comma(totalPrice)}}</div>
 				</div>
 			</div>
 			<div class="dutchPay">
 				<div class="dutchPayText">더치페이</div>
 				<div class="dutchPayCount">
-					<div class="dutchPayCountPlus">
+					<div class="dutchPayCountPlus" @click="countGroup('+')">
 						<img src="@/assets/billPlus.svg">
 					</div>
-					<div class="dutchPayCountPerson">1명</div>
-					<div class="dutchPayCountMinor">
+					<div class="dutchPayCountPerson">{{groupCount + '명'}}</div>
+					<div class="dutchPayCountMinor" @click="countGroup('-')">
 						<img src="@/assets/billMinor.svg">
 					</div>
 				</div>
 			</div>
 			<div class="dutchPayPrice">
-				<div class="dutchPayPriceText">1인당</div>
-				<div class="dutchPayTotalPrice">0원</div>
+				<div class="dutchPayPriceText">{{groupCount + '인당'}}</div>
+				<div class="dutchPayTotalPrice">{{comma(totalPrice/groupCount) + '원'}}</div>
 			</div>
 		</div>
   </div>
 </template>
 
 <script>
+import { ref, computed } from 'vue';
+import { useStore } from "vuex";
+
+import {comma} from '@/util/util'
 
 export default {
 	components: { 
 	},
-	setup () {
-	}
+  setup(props, { emit }) {
+		const store = useStore();
+		const groupCount = ref(1);
+		const orderList = computed(() => store.state.main.orderList);
+		const totalPrice = computed(() => store.getters.price);
+
+		const countGroup = (sign) => {
+			if (sign === '+') groupCount.value++;
+			else if (sign === '-' && groupCount.value !== 1) groupCount.value--;
+		}
+		const closeBag = () => {
+			emit('close-bag', false);
+    };
+
+		return {
+			comma,
+			groupCount,
+			countGroup,
+			orderList,
+			totalPrice,
+			closeBag
+		}
+  }
 }
 </script>
 
@@ -92,7 +117,7 @@ export default {
     padding-left: 3.675vw;
 	}
 	.bill .billHeader .headerTitle{ 
-		font-family: "notoserif-bold";
+		font-family: "NotoSerifKR-Bold";
     font-size: 4.25vw;
     letter-spacing: -.10625vw;
 	}
@@ -116,13 +141,14 @@ export default {
     justify-content: space-between;
     align-items: center;
     gap: 1.25vw;
-    font-family: "notoserif-bold";
+    font-family: "NotoSerifKR-Bold";
     color: #131313;
 	}
 	.bill .billGoodsList .billInfo .billInfoWrap .billInfoContainer .billInfoName .billGoodsName{ 
 		flex: 1;
     font-size: 4vw;
     letter-spacing: -.2vw;
+    text-align: left;
 	}
 	.bill .billGoodsList .billInfo .billInfoWrap .billInfoContainer .billInfoName .billGoodsPrice{ 
 		width: 28.75vw;
@@ -143,7 +169,7 @@ export default {
 	}
 	.bill .billGoodsList .billInfo .billInfoWrap .billInfoContainer .billInfoOption{ 
 		margin-top: 2.375vw;
-    font-family: Spoqa Han Sans Neo,"sans-serif";
+    font-family: "SpoqaHanSansNeo-Bold";
     font-size: 2.75vw;
     color: #666;
     display: flex;
@@ -164,7 +190,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: "notoserif-bold";
+    font-family: "NotoSerifKR-Bold";
     font-size: 3.5vw;
     color: #ab240f;
     letter-spacing: -.175vw;
@@ -184,7 +210,7 @@ export default {
     border-top: 0.125vw solid #ccc;
 	}
 	.bill .billGoodsList .dutchPay .dutchPayText{ 
-		font-family: "notoserif-bold";
+		font-family: "NotoSerifKR-Bold";
     font-size: 4.25vw;
     letter-spacing: -.10625vw;
     color: #2f2a26;
@@ -193,7 +219,7 @@ export default {
 		display: flex;
     align-items: center;
     gap: 2.625vw;
-    font-family: "notoserif-semibold";
+    font-family: "NotoSerifKR-semibold";
     font-size: 3.5vw;
     letter-spacing: -.175vw;
 	}
@@ -207,7 +233,7 @@ export default {
     justify-content: center;
     align-items: center;
     gap: 2.125vw;
-    font-family: "Spoqa Han Sans";
+    font-family: "SpoqaHanSansNeo-Bold";
 	}
 	.bill .billGoodsList .dutchPayPrice .dutchPayPriceText{ 
 		font-size: 3.5vw;

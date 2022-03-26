@@ -12,12 +12,12 @@
 		</div>
 		<div class="orderHistoryGoodsList">
 			<div class="historyInfo">
-				<div class="historyInfoWrap" v-for="( order, index ) in orderList" :key=index>
+				<div class="historyInfoWrap" v-for="( order, index ) in orderList.slice().reverse()" :key=index>
 					<div class="historyInfoContainer">
 						<div class="historyInfoTitle">
-							<div class="number">{{index + 1}}</div>
+							<div class="number">{{ order.orderNo }}</div>
 							<div class="text">마지막주문</div>
-							<div class="orderTime">오전 01:58:55</div>
+							<div class="orderTime">{{ "오전 " + order.time }}</div>
 						</div>
 						<div class="historyInfoList">
 							<div class="detailWrap">
@@ -94,7 +94,7 @@ export default {
 
 	}
 	.orderHistory .orderHistoryHeader .headerTitle{
-		font-family: "notoserif-bold";
+		font-family: "NotoSerifKR-Bold";
     font-size: 4.25vw;
     letter-spacing: -.10625vw;
 	}
@@ -120,7 +120,7 @@ export default {
 		display: flex;
     align-items: center;
     gap: 2.125vw;
-    font-family: "Spoqa Han Sans";
+    font-family: "SpoqaHanSansNeo-Bold";
 	}
 	.orderHistory .orderHistoryGoodsList .historyInfo .historyInfoWrap .historyInfoContainer .historyInfoTitle .number{ 
 		background-color: #ab240f;
@@ -159,7 +159,7 @@ export default {
 		display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: "notoserif-bold";
+    font-family: "NotoSerifKR-Bold";
     color: #131313;
 	}
 	.orderHistory .orderHistoryGoodsList .historyInfo .historyInfoWrap .historyInfoContainer .historyInfoList .detailWrap .detailName .detailTitle{ 
@@ -179,7 +179,7 @@ export default {
     align-items: center;
     gap: 2vw;
     background-color: #2f2a26;
-    font-family: Spoqa Han Sans Neo,"sans-serif";
+    font-family: "SpoqaHanSansNeo-Bold";
     font-weight: 700;
 	}
 	.orderHistory .orderHistoryGoodsList .historyTotal .totalText{ 
