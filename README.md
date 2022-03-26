@@ -1,10 +1,11 @@
 # 티오더 프론트앤드 과제
 
 ## 프로젝트 실행
-npm i
-npm run serve
+ 1.npm i
+ 2.npm run serve
 
 ## 폴더 구조
+```jsx
 ├─ public
 │   └─ assets
 │     
@@ -34,10 +35,11 @@ npm run serve
        ├─ landing
        ├─ main
        └─ order
+```
 
-요구사항
-    a. 상품 리스트 페이지
-    b. 상품을 클릭해 장바구니에 담기
-    c. 주문하기
-    d. 주문내역, 계산서
+## 요구사항
+    1. 상품 리스트 페이지
+    2. 상품을 클릭해 장바구니에 담기
+    3. 주문하기
+    4. 주문내역, 계산서
 todos
