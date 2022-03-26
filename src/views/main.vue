@@ -22,7 +22,7 @@
 						</div>
 						<div class="bar"></div>
 						<div class="goodsListWrap">
-							<div class="goodsList" v-for="(goods, id) in list" :key=id @click="clickGoods(goods);">
+							<div class="goodsList" v-for="(goods, id) in goodsList" :key=id @click="clickGoods(goods);">
 								<div class="goodsImgWrap">
 									<img class="goodsImg" :src=goods.image>
 									<div v-if="goods.soldOut" class="soldOut">SOLD OUT</div>
@@ -50,11 +50,12 @@
 			</div>
 		</div>
   </div>
-
 	<Navigation :open="openShoppingBag" @open-bag="openShoppingBag=true">
 	</Navigation>
-	<ShoppingBag :open="openShoppingBag" :goods="selectedGoods"  @close-bag="openShoppingBag=value">
+	<ShoppingBag :open="openShoppingBag" :goods="selectedGoods"  @close-bag="openShoppingBag=value" @open-toast ="openToastPop('')">
 	</ShoppingBag>
+
+  <Toast :open="openToast" :text="toastMessage" @close-toast="openToast=false"></Toast>
 </template>
 
 <script>
@@ -64,6 +65,7 @@ import { ref, watch } from "vue";
 
 import {comma} from '@/util/util'
 
+import Toast from '../components/common/Toast';
 import Navigation from '../components/Navigation';
 import ShoppingBag from '../components/ShoppingBag';
 
@@ -72,13 +74,12 @@ function fetch() {
 	store.dispatch('getMockData')
 	const categories = computed(() => store.state.main.categories);
 	const subCategories = computed(() => store.state.main.subCategories);
-	const goodsList = computed(() => store.state.main.goods);
-	const list = computed(() => store.getters.getGoodsList);
+	// const goodsList = computed(() => store.state.main.goods);
+	const goodsList = computed(() => store.getters.getGoodsList);
 
 	return {
 		categories,
 		subCategories,
-		list,
 		goodsList
 	}
 }
@@ -87,6 +88,7 @@ export default {
 	components: { 
 		Navigation,
 		ShoppingBag,
+    Toast,
 	},
 	setup () {
 		const store = useStore();
@@ -96,14 +98,26 @@ export default {
 		const selectedSubCategory = ref('111706');
 		const selectedGoods = ref({});
 		const openShoppingBag = ref(false);
+		const openToast = ref(false);
+		const toastMessage = ref('');
 		const shoppingBagList = computed(() => store.state.main.shoppingBagList);
 
 		watch(shoppingBagList, () => {
 			console.log(shoppingBagList.value)
     });
+    const openToastPop = (goods) => {
+      //토스트
+      if(goods !== '') {
+        toastMessage.value= goods + '상품을 추가하였습니다.'
+      } else {
+        toastMessage.value= '주문을 완료했습니다.'
+      }
+      openToast.value=true
+    }
 		const clickGoods = (v) => {
 			store.commit('SET_SHOPPINGBAGLIST_DATA', v)
 			openShoppingBag.value = true
+      openToastPop(v.name)
     };
 
 		return {
@@ -114,7 +128,10 @@ export default {
 			selectedMainCategory,
 			selectedSubCategory,
 			comma,
-			openShoppingBag
+			openShoppingBag,
+      openToastPop,
+      openToast,
+      toastMessage
 		}
 	}
 }
@@ -292,14 +309,14 @@ export default {
 	}
 	.goodsWrap .goodsListWrap .goodsList .goodsInfo .goodsMarkWrap{
 		display: flex;
-    margin: 0.3906vh 0;
+    margin: 0.4vh 0;
     gap: 1.25vw;
     font-size: 2.35vw;
 	}
 	.goodsWrap .goodsListWrap .goodsList .goodsInfo .goodsMarkWrap .goodsMark{
-		height: 1.5625vh;
-    line-height: 1.5625vh;
-    padding: 0.2344vh 1vw;
+		height: 2.3vh;
+    line-height: 2vh;
+    padding: 0.2vh 1vw;
     border-radius: 0.625vw;
     color: #fff;
     background-color: #2f2a26;
@@ -307,7 +324,6 @@ export default {
 	.goodsWrap .goodsListWrap .goodsList .goodsInfo .goodsNameWrap{
     font-family: "NotoSerifKR-SemiBold";
     font-size: 2.75vw;
-    letter-spacing: -.06875vw;
     width: 35vw;
     white-space: nowrap;
     overflow: hidden;

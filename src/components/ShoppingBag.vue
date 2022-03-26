@@ -83,6 +83,8 @@ export default {
 				order.value[i]['time'] = dayjs().format("HH:mm:ss")
 			}
 			store.commit('SET_ORDERLIST_DATA', order.value)
+      store.commit('SET_SHOPPINGBAGLIST_RESET', [])
+			emit('open-toast', false);
 			emit('close-bag', false);
     };
 

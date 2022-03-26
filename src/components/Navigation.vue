@@ -53,7 +53,7 @@ export default {
 		const openBag = () => {
 			//장바구니 체크
 			if (props.open === false && shoppingBagList.value.length !== 0) emit('open-bag', true);
-			else alert("장바구니 비어있음")
+			else alert("장바구니에 상품이 없습니다.")
     };
 
 		return {

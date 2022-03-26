@@ -55,6 +55,9 @@ export const main = {
     SET_SHOPPINGBAGLIST_DATA(state, payload) {
       return state.shoppingBagList.push(payload);
     },
+    SET_SHOPPINGBAGLIST_RESET(state, payload) {
+      return state.shoppingBagList = payload;
+    },
     SET_ORDERLIST_DATA(state, payload) {
       return state.orderList = payload;
     },
