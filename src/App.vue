@@ -1,26 +1,40 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+    <Header />
+    
+    <router-view />
+	
+    <!-- <Footer /> -->
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Header from './components/common/Header'; //import 헤더 추가
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Header,          //헤더 컴포넌트 추가
+    // Landing,
+    // Footer         //풋터 컴포넌트 추가
   }
 }
 </script>
 
 <style>
+@import './assets/style/reset.css';
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  margin: 0 auto;
+  width: 100vw;
+  height: 100vh;
+  overflow:hidden;
 }
+::-webkit-scrollbar {
+  display: none;
+}
+
 </style>
